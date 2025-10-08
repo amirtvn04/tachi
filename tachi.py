@@ -10,6 +10,19 @@ SCRIPT_DIR = Path(__file__).parent
 CONFIG_FILE = SCRIPT_DIR / "tachi.json"
 
 
+def load_config():
+    if not CONFIG_FILE.exists():
+        CONFIG_FILE.write_text(json.dumps({}, indent=2))
+    try:
+        return json.loads(CONFIG_FILE.read_text())
+    except json.JSONDecodeError:
+        return {}
+
+
+def save_config(data):
+    CONFIG_FILE.write_text(json.dumps(data, indent=2))
+
+
 def config(key, value=None):
     try:
         data = json.loads(CONFIG_FILE.read_text())
@@ -108,6 +121,41 @@ def import_vscode_recent():
         print(f"❌ Error importing VSCode projects: {e}")
 
 
+def list_projects():
+    data = load_config()
+    if not data:
+        print("📭 No projects registered yet.")
+        return
+    print("📁 Registered Projects:")
+    for name, path in data.items():
+        print(f"  - {name:15} → {path}")
+
+
+def remove_project(name):
+    data = load_config()
+    if name not in data:
+        print(f"❌ Project '{name}' not found.")
+        return
+    del data[name]
+    save_config(data)
+    print(f"🗑️  Removed project '{name}' successfully.")
+
+
+def search_projects(keyword):
+    data = load_config()
+    results = {
+        k: v
+        for k, v in data.items()
+        if keyword.lower() in k.lower() or keyword.lower() in v.lower()
+    }
+    if not results:
+        print(f"🔍 No projects found matching '{keyword}'.")
+        return
+    print(f"🔍 Search results for '{keyword}':")
+    for name, path in results.items():
+        print(f"  - {name:15} → {path}")
+
+
 def main():
     if not CONFIG_FILE.exists():
         with CONFIG_FILE.open("w") as f:
@@ -130,6 +178,20 @@ def main():
 
         return config(name, path)
 
+    if command == "list":
+        return list_projects()
+
+    if command == "remove":
+        if not name:
+            print("❌ Missing project name to remove.")
+            return
+        return remove_project(name)
+
+    if command == "search":
+        if not name:
+            print("❌ Missing search keyword.")
+            return
+        return search_projects(name)
     return open_project(command)
 
 
