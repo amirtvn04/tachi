@@ -77,6 +77,10 @@ def detect_auto_commands(path: Path):
 
     return commands
 
+def open_projects(names):
+    for name in names:
+        open_project(name)
+
 def open_project(name):
     path_str = config(key = name)
 
