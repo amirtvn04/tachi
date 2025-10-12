@@ -1,2 +1,5 @@
 tachi.json
 tachi-test.txt
+data/*.json
+.venv
+*.DS_Store
