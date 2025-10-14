@@ -1,6 +1,6 @@
 import sys
-from tachi.core.vscode_import import import_vscode_recent # type: ignore
-from tachi.core.commands import ( # type: ignore
+from core.vscode_import import import_vscode_recent 
+from core.commands import ( 
     add_project,
     remove_project,
     list_projects,
@@ -8,8 +8,8 @@ from tachi.core.commands import ( # type: ignore
     search_projects,
     edit_project,
 )
-from tachi.config.manager import config # type: ignore
-from tachi.core.utils import show_help # type: ignore
+from config.manager import config 
+from core.utils import show_help 
 
 def main():
     args = sys.argv[1:]

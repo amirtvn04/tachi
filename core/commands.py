@@ -1,8 +1,8 @@
 import subprocess
 import json
 from pathlib import Path
-from tachi.config.manager import (config, CONFIG_FILE) # type: ignore
-from tachi.core.utils import run_command # type: ignore
+from config.manager import (config, CONFIG_FILE) # type: ignore
+from core.utils import run_command # type: ignore
 
 def add_project(name, path):
     if not name or not path:

@@ -1,6 +1,6 @@
 import os
 import subprocess
-from tachi.config.manager import config # type: ignore
+from config.manager import config
 from pathlib import Path
 import json
 
