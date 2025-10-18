@@ -1,21 +1,21 @@
 import sys
 from core.vscode_import import import_vscode_recent 
+from core.interactive import (
+    manage_projects, list_projects,
+    search_projects_rich,
+    remove_or_edit_project,
+)
 from core.commands import ( 
     add_project,
-    remove_project,
-    list_projects,
     open_projects,
-    search_projects,
-    edit_project,
 )
-from config.manager import config 
 from core.utils import show_help 
 
 def main():
     args = sys.argv[1:]
     
     if not args:
-        show_help()
+        manage_projects()
         return
 
     command = args[0]
@@ -24,21 +24,20 @@ def main():
         name, path = args[1], args[2]
         return add_project(name, path)
     
-    elif command == "remove" and len(args) >= 2:
-        return remove_project(args[1])
-    
     elif command == "list":
         return list_projects()
     
-    elif command == "search" and len(args) >= 2:
-        return search_projects(args[1])
+    elif command == "search" and len(args) >= 1:
+        search_projects_rich()
     
-    elif command == "edit" and len(args) >= 4:
-        name, path, new_name = args[1], args[2], args[3]
-        return edit_project(name, path, new_name)
+    elif command == "edit" and len(args) >= 1:
+        remove_or_edit_project()
     
     elif command == "import":
         return import_vscode_recent()
+    
+    elif command == "manage":
+        return manage_projects()
     
     elif command == "help":
         return show_help()
