@@ -1,9 +1,17 @@
 #!/bin/bash
 
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+NC='\033[0m'
+
+echo -e "${CYAN}🚀 Installing Tachi CLI...${NC}"
+
 FILE_PATH=$(find "$(pwd)" -name "__main__.py" | head -n 1)
 
 if [ -z "$FILE_PATH" ]; then
-    echo "❌ __main__.py not found!"
+    echo -e "${RED}❌ __main__.py not found!${NC}"
     exit 1
 fi
 
@@ -30,22 +38,50 @@ else
     SOURCE_CMD="source ~/.profile"
 fi
 
+echo -e "\n${YELLOW}📦 Installing required Python packages...${NC}"
+
+if ! command -v python3 &> /dev/null; then
+    echo -e "${RED}❌ Python3 not found! Please install Python 3.${NC}"
+    exit 1
+fi
+
+if command -v pip3 &> /dev/null; then
+    PIP_CMD="pip3"
+elif command -v pip &> /dev/null; then
+    PIP_CMD="pip"
+else
+    echo -e "${RED}❌ pip not found! Please install pip or pip3.${NC}"
+    exit 1
+fi
+
+REQUIRED_PACKAGES=("rich" "prompt_toolkit" "inquirer")
+
+for pkg in "${REQUIRED_PACKAGES[@]}"; do
+    if python3 -m pip show "$pkg" &> /dev/null; then
+        echo -e "${GREEN}✔ $pkg already installed.${NC}"
+    else
+        echo -e "${CYAN}➡ Installing $pkg using $PIP_CMD...${NC}"
+        $PIP_CMD install "$pkg" --quiet
+    fi
+done
+
 if grep -q "alias tachi=" "$FILE"; then
     CURRENT_ALIAS=$(grep "alias tachi=" "$FILE")
     if [ "$CURRENT_ALIAS" != "$ALIAS_CMD" ]; then
         sed -i.bak "s|$CURRENT_ALIAS|$ALIAS_CMD|" "$FILE"
-        echo "🔄 Updated existing alias in $FILE"
+        echo -e "${YELLOW}🔄 Updated existing alias in $FILE${NC}"
     else
-        echo "✅ Alias 'tachi' already up to date in $FILE"
+        echo -e "${GREEN}✅ Alias 'tachi' already up to date in $FILE${NC}"
     fi
 else
     echo "$ALIAS_CMD" >> "$FILE"
-    echo "✅ Alias added to $FILE"
+    echo -e "${GREEN}✅ Alias added to $FILE${NC}"
 fi
 
 if [ -f "${FILE}.bak" ]; then
     rm "${FILE}.bak"
 fi
 
-echo "🎯 Alias 'tachi' is ready to use in $SHELL_NAME!"
-echo "📝 Run '$SOURCE_CMD' or restart your terminal to apply changes."
+echo -e "\n${CYAN}🎯 Alias 'tachi' is ready to use in $SHELL_NAME!${NC}"
+echo -e "${YELLOW}📝 Run '$SOURCE_CMD' or restart your terminal to apply changes.${NC}"
+echo -e "${GREEN}✅ Installation complete.${NC}"
